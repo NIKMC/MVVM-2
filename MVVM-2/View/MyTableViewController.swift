@@ -11,14 +11,10 @@ import UIKit
 class MyTableViewController: UITableViewController {
 
 
-    var profiles: [Profile]?
+    var viewModel: TableViewViewModelType?
     
     override func viewDidLoad() {
-        profiles = [
-            Profile(name: "Ivan", secondName: "Nikitin", age: 24),
-            Profile(name: "Max", secondName: "Nikitin", age: 25),
-            Profile(name: "Sam", secondName: "Nikitin", age: 26)
-        ]
+        viewModel = ViewModel()
     }
     
     // MARK: - Table view data source
@@ -26,17 +22,16 @@ class MyTableViewController: UITableViewController {
    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return (profiles?.count)!
+        return viewModel?.numberOfRows() ?? 0
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? TableViewCell
 
-        guard let tableViewCell = cell else { return UITableViewCell() }
-        let profile = profiles![indexPath.row]
-        tableViewCell.fullNameLabel.text = "\(profile.name) \(profile.secondName)"
-        tableViewCell.ageLabel.text = "\(profile.age)"
+        guard let tableViewCell = cell, let viewModel = viewModel else { return UITableViewCell() }
+        let cellViewModel = viewModel.cellViewModel(forIndexPath: indexPath)
+        tableViewCell.viewModel = cellViewModel
 
         return tableViewCell
     }
